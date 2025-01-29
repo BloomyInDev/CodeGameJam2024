@@ -8,7 +8,7 @@ import fr.bloomyindev.cgj2024.CoordinateSystems.AbsoluteCoords3D;
 public class Chollet extends Star {
 
     public Chollet(AbsoluteCoords3D coords, int absoluteRadius) {
-        super(coords, absoluteRadius, false, false);
+        super(coords, absoluteRadius, false, Color.PINK);
     }
 
     public Color getColor() {

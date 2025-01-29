@@ -3,7 +3,6 @@ package fr.bloomyindev.cgj2024;
 import java.util.ArrayList;
 import java.util.Random;
 
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import fr.bloomyindev.cgj2024.CoordinateSystems.*;
@@ -17,18 +16,23 @@ public class Star {
     private boolean isVisitable;
     private ArrayList<Color> listeCouleur;
 
-    public Star(AbsoluteCoords3D coords, int absoluteRadius, boolean isVisitable, boolean isDecorative) {
+    public Star(AbsoluteCoords3D coords, int absoluteRadius, boolean isVisitable) {
         this.coords = coords;
         this.absoluteRadius = absoluteRadius;
         this.visited = false;
         this.isVisitable = isVisitable;
-        construitListeCouleur();
+        buildColorList();
         Random random = new Random();
         int randomNumber = random.nextInt(3 - 0 + 1) + 0;
-        this.color = !isDecorative ? listeCouleur.get(randomNumber) : Color.WHITE;
+        this.color = listeCouleur.get(randomNumber);
     }
 
-    public void construitListeCouleur() {
+    public Star(AbsoluteCoords3D coords, int absoluteRadius, boolean isVisitable, Color color) {
+        this(coords, absoluteRadius, isVisitable);
+        this.color = color;
+    }
+
+    public void buildColorList() {
         listeCouleur = new ArrayList<>();
         listeCouleur.add(Color.BLUE);
         listeCouleur.add(Color.BROWN);
@@ -95,6 +99,10 @@ public class Star {
     }
 
     public boolean isCholletStar() {
+        return false;
+    }
+
+    public boolean isDecorativeStar() {
         return false;
     }
 }

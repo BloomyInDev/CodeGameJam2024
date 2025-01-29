@@ -9,12 +9,8 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.ScreenUtils;
 
-import fr.bloomyindev.cgj2024.Chollet;
+import fr.bloomyindev.cgj2024.*;
 import fr.bloomyindev.cgj2024.CoordinateSystems.*;
-import fr.bloomyindev.cgj2024.Main;
-import fr.bloomyindev.cgj2024.Spaceship;
-import fr.bloomyindev.cgj2024.Star;
-import fr.bloomyindev.cgj2024.Ut;
 
 import java.util.ArrayList;
 
@@ -30,6 +26,7 @@ public class GameScreen implements Screen {
     private ArrayList<Integer> orderToDrawStars;
     private Texture cockpitTexture;
     private Sprite cockpitSprite;
+    private float time = 0;
 
     public GameScreen(final Main game) {
         this.game = game;
@@ -68,9 +65,9 @@ public class GameScreen implements Screen {
                 float z = 0;
                 Star star;
                 if (i <= 10) {
-                    star = new Star(new AbsoluteCoords3D(x, y, z), 1, true, false);
+                    star = new Star(new AbsoluteCoords3D(x, y, z), 1, true);
                 } else {
-                    star = new Star(new AbsoluteCoords3D(x, y, z), 1, false, false);
+                    star = new Star(new AbsoluteCoords3D(x, y, z), 1, false);
                 }
                 if (stars.isEmpty()) {
                     confirmedStar = true;
@@ -97,7 +94,7 @@ public class GameScreen implements Screen {
             float x = Ut.randomMinMax(-10000, 10000);
             float y = Ut.randomMinMax(-10000, 10000);
             float z = Ut.randomMinMax(-1000, 1000);
-            Star star = new Star(new AbsoluteCoords3D(x, y, z), 1, false, true);
+            Star star = new DecorativeStar(new AbsoluteCoords3D(x, y, z));
             stars.add(star);
         }
     }
@@ -108,6 +105,7 @@ public class GameScreen implements Screen {
 
     @Override
     public void render(float delta) {
+        time+=Gdx.graphics.getDeltaTime();
         input();
         logic();
         draw();
@@ -216,13 +214,14 @@ public class GameScreen implements Screen {
         game.shape.setAutoShapeType(true);
 
         game.shape.begin(ShapeRenderer.ShapeType.Filled);
+        System.out.printf("time %f\n",time);
 
         for (int i = orderToDrawStars.size()-1; i > -1; i--) {
             int j = orderToDrawStars.get(i);
             FieldOfViewCoords starFOVCoords = starsCoords.get(j);
             float[] normalisedCoords = starFOVCoords.getNormalisedCoords();
 
-            normalisedCoords[0] = (normalisedCoords[0] + 1) * 8f;
+            normalisedCoords[0] = (normalisedCoords[0]+.5f) * 16f;
             normalisedCoords[1] = (normalisedCoords[1] + 1) * 4.5f;
 
             if (starFOVCoords.getVisibility()) {
@@ -231,6 +230,7 @@ public class GameScreen implements Screen {
 
                 star.render(game.shape, normalisedCoords[0], normalisedCoords[1], relCoords.getDistance(), fovAngle);
             }
+
         }
 
         game.shape.end();
