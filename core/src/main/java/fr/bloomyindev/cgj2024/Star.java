@@ -17,7 +17,7 @@ public class Star {
     private boolean isVisitable;
     private ArrayList<Color> listeCouleur;
 
-    public Star(AbsoluteCoords3D coords, Color color, int absoluteRadius, boolean isVisitable) {
+    public Star(AbsoluteCoords3D coords, int absoluteRadius, boolean isVisitable, boolean isDecorative) {
         this.coords = coords;
         this.absoluteRadius = absoluteRadius;
         this.visited = false;
@@ -25,7 +25,7 @@ public class Star {
         construitListeCouleur();
         Random random = new Random();
         int randomNumber = random.nextInt(3 - 0 + 1) + 0;
-        this.color = listeCouleur.get(randomNumber);
+        this.color = !isDecorative ? listeCouleur.get(randomNumber) : Color.WHITE;
     }
 
     public void construitListeCouleur() {

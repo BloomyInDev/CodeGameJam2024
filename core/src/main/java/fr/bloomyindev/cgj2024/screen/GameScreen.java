@@ -28,8 +28,6 @@ public class GameScreen implements Screen {
     private FieldOfView fov;
     private float fovAngle = 70.0f * (float) (Math.PI / 180.0);
     private ArrayList<Integer> orderToDrawStars;
-    private Texture skyboxTexture;
-    private Sprite skyboxSprite;
     private Texture cockpitTexture;
     private Sprite cockpitSprite;
 
@@ -44,11 +42,6 @@ public class GameScreen implements Screen {
         spaceshipRelativeToStars = new ArrayList<SpaceshipRelative>();
 
         orderToDrawStars = new ArrayList<Integer>();
-
-        skyboxTexture = new Texture(Gdx.files.internal("skybox.png"));
-        skyboxSprite = new Sprite(skyboxTexture);
-
-        skyboxSprite.setSize(16f, 9f);
 
         cockpitTexture = new Texture(Gdx.files.internal("cockpit.png"));
         cockpitSprite = new Sprite(cockpitTexture);
@@ -66,14 +59,19 @@ public class GameScreen implements Screen {
     }
 
     public void spawnStars() {
-        stars.add(new Chollet(new AbsoluteCoords3D(120, 69,0), 1));
-        for (int i = 0; i < 9; i++) {
+        stars.add(new Chollet(new AbsoluteCoords3D(Ut.randomMinMax(-5000, 5000), Ut.randomMinMax(-5000, 5000),0), 1));
+        for (int i = 0; i < 15; i++) {
             boolean confirmedStar = false;
             while (!confirmedStar) {
                 float x = Ut.randomMinMax(-5000, 5000);
                 float y = Ut.randomMinMax(-5000, 5000);
                 float z = 0;
-                Star star = new Star(new AbsoluteCoords3D(x, y, z), Color.YELLOW, 1, false);
+                Star star;
+                if (i <= 10) {
+                    star = new Star(new AbsoluteCoords3D(x, y, z), 1, true, false);
+                } else {
+                    star = new Star(new AbsoluteCoords3D(x, y, z), 1, false, false);
+                }
                 if (stars.isEmpty()) {
                     confirmedStar = true;
                 } else {
@@ -94,6 +92,13 @@ public class GameScreen implements Screen {
                     stars.add(star);
                 }
             }
+        }
+        for (int i = 0; i < 10000; i++) {
+            float x = Ut.randomMinMax(-10000, 10000);
+            float y = Ut.randomMinMax(-10000, 10000);
+            float z = Ut.randomMinMax(-1000, 1000);
+            Star star = new Star(new AbsoluteCoords3D(x, y, z), 1, false, true);
+            stars.add(star);
         }
     }
 
@@ -165,16 +170,8 @@ public class GameScreen implements Screen {
     private void logic() {
         spaceship.move();
 
-        for (int i = 0; i < orderToDrawStars.size(); i++) {
-            System.out.print(spaceshipRelativeToStars.get(orderToDrawStars.get(i)).getDistance());
-            System.out.print(", ");
-        }
-        System.out.println();
-
-        if (orderToDrawStars.size() != 0) {
-            int idClosestStar = SpaceshipRelative.smallestDistanceId(spaceshipRelativeToStars);
-            game.soundManager.playSound(spaceshipRelativeToStars.get(idClosestStar).getDistance(), stars.get(idClosestStar));
-        }
+        int idClosestStar = SpaceshipRelative.smallestDistanceId(spaceshipRelativeToStars);
+        game.soundManager.playSound(spaceshipRelativeToStars.get(idClosestStar).getDistance(), stars.get(idClosestStar));
         for (int i = 0; i < starsCoords.size(); i++) {
             SpaceshipRelative relCoords = spaceshipRelativeToStars.get(i);
             relCoords.reComputeRelativeCoords(spaceship.getSpaceshipCoord());
@@ -214,10 +211,6 @@ public class GameScreen implements Screen {
         game.viewport.apply();
 
         game.sprite.setProjectionMatrix(game.viewport.getCamera().combined);
-
-        game.sprite.begin();
-        skyboxSprite.draw(game.sprite);
-        game.sprite.end();
 
         game.shape.setProjectionMatrix(game.viewport.getCamera().combined);
         game.shape.setAutoShapeType(true);

@@ -17,29 +17,48 @@ public class SoundManager {
         this.audio = audio;
         music.setVolume(.5f);
         musicWMel.setVolume(0f);
+        musicTroll.setVolume(0f);
         musicWMel.setLooping(true);
         music.setLooping(true);
+        musicTroll.setLooping(true);
         music.play();
         musicWMel.play();
+        musicTroll.play();
     }
 
     public void playSound(long distance, Star star) {
-        if (star.isVisitable()) {
+        if (star.isVisitable() && distance <= 5000) {
             float vol = calculateVolumeWithDistance(distance);
             System.out.printf("%f (dist %d) playing\n", vol, distance);
-            music.setVolume(1 - vol);
+            music.setVolume(0);
             musicWMel.setVolume(vol);
-        } else if (star.isCholletStar() && distance < 100) {
-            musicTroll.setVolume(0.9f);
-            music.setVolume(0.1f);
-            if (!musicTroll.isPlaying()) {
-                musicTroll.play();
+            musicTroll.setVolume(0f);
+        } else if (star.isCholletStar() && distance <= 5000) {
+            float vol = calculateVolumeWithDistance(distance);
+            musicTroll.setVolume(vol);
+            music.setVolume(0f);
+        } else if (!star.isVisitable() && !star.isCholletStar() && distance <= 5000) {
+            float vol = calculateVolumeWithDistance(distance);
+            music.setVolume(0);
+            if (distance <= 300) {
+                if (distance % 2 == 0) {
+                    musicWMel.setVolume(vol);
+                } else {
+                    musicWMel.setVolume(1 - vol);
+                }
+            } else {
+                musicWMel.setVolume(vol);
             }
+            musicTroll.setVolume(0f);
+        } else {
+            music.setVolume(0.5f);
+            musicTroll.setVolume(0f);
+            musicWMel.setVolume(0f);
         }
 
     }
 
     private float calculateVolumeWithDistance(long distance) {
-        return maxVolume / (float) Math.pow(distance, 2);
+        return (float) Math.exp(-((double) distance / 1000));
     }
 }
